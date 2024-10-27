@@ -1,0 +1,54 @@
+apiVersion: apps/v1 
+kind: ConfigMap
+matadata:
+  name: backend
+  namespace: expense
+  labels:
+    name: backend
+data:
+  DB_HOST: "mysql"
+---
+apiVersion: v1 
+kind: Deployment
+metadata: 
+  name: backend 
+  namespace: expense 
+  labels:
+    app: backend 
+    tier: api 
+    project: expense 
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend 
+      tier: api 
+      projrct: expense
+template:
+  metadata:
+    labels:
+      app: backend 
+      tier: api
+      projrct: expense 
+  spec:
+    containers:
+    - name: backend
+      image: silpa11/backend:v1
+      ports:
+        containerPort: 8080
+---
+kind: service
+apiVersion: v1 
+metadata:
+  name: backend-svc
+  namespace: expense
+spec: 
+  selector:
+    app: backend
+    tier: api
+    projrct: expense
+  ports:
+  - name: backend-port
+    protocal: TCP
+    port: 8080
+    targetport: 8080
